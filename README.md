@@ -4,9 +4,9 @@ Using PyTorch in Julia Language via PyCall.
 
 ## Requirement
 
-* Julia 1.0+
-* PyTorch 0.4+ with Python 3.5+ (Anaconda3 is recommended)
-* [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) 0.18.5+, the lower version may lead to memory leakage
+* [Julia](http://julialang.org) 1.0+
+* [PyTorch](http://pytorch.org) 0.4+ with Python 3.5+ (Anaconda3 is recommended)
+* [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) 1.18.5+, the lower version may lead to memory leakage
 
 ## Roadmap
 
