@@ -21,7 +21,7 @@ export PYTHON="/home/xiucheng/anaconda3/bin/python"
 * [Logistic Regression](https://github.com/boathit/JuliaTorch/blob/master/logisticRegression.jl)
 * [MLP](https://github.com/boathit/JuliaTorch/blob/master/mlp.jl)
 * [Convolutional Neural Net](https://github.com/boathit/JuliaTorch/blob/master/convnet.jl)
-* [Residual Neural Net](https://github.com/boathit/JuliaTorch/blob/master/resnet.jl), using identity connection:
+* [Residual Neural Net](https://github.com/boathit/JuliaTorch/blob/master/resnet.jl), using skip connection:
   `julia resnet.jl`; using plain connection: `julia resnet.jl --plain`.
 * [Variational Auto-Encoder](https://github.com/boathit/JuliaTorch/blob/master/vae.jl), implementing
   VAE described in [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114).

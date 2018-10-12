@@ -51,9 +51,9 @@ function align(num_in::Int, num_out::Int, stride::Int)
 end
 
 @pydef mutable struct ResBlock <: nn.Module
-    function __init__(self, num_in, num_out, stride, identity_con=true)
+    function __init__(self, num_in, num_out, stride, short_cut=true)
         pybuiltin(:super)(ResBlock, self)[:__init__]()
-        self[:identity_con] = identity_con
+        self[:short_cut] = short_cut
         self[:align] = align(num_in, num_out, stride)
         ## transforms in residual block
         ## only self[:conv1] may change the shape of the input
@@ -68,32 +68,32 @@ end
         ## Note that o will always have the same shape with self[:align](x)
         o = x |> self[:conv1] |> self[:bn1] |> self[:relu] |>
                  self[:conv2] |> self[:bn2]
-        self[:identity_con] == true && (o += self[:align](x))
+        self[:short_cut] == true && (o += self[:align](x))
         self[:relu](o)
     end
 end
 
 function buildResBlocks(num_in::Int, num_out::Int, stride::Int,
-                        num_blocks::Int, identity_con=true)
+                        num_blocks::Int, short_cut=true)
     ## only the first block may change the shape of the input
-    blocks = [ResBlock(num_in, num_out, stride, identity_con)]
+    blocks = [ResBlock(num_in, num_out, stride, short_cut)]
     for _ in 2:num_blocks
-        push!(blocks, ResBlock(num_out, num_out, 1, identity_con))
+        push!(blocks, ResBlock(num_out, num_out, 1, short_cut))
     end
     nn.Sequential(blocks...)
 end
 
-buildResBlocks(inout::Pair, stride::Int, num_blocks::Int, identity_con=true) =
-    buildResBlocks(first(inout), last(inout), stride, num_blocks, identity_con)
+buildResBlocks(inout::Pair, stride::Int, num_blocks::Int, short_cut=true) =
+    buildResBlocks(first(inout), last(inout), stride, num_blocks, short_cut)
 
 @pydef mutable struct ResNet <: nn.Module
-    function __init__(self, num_classes, identity_con=true)
+    function __init__(self, num_classes, short_cut=true)
         pybuiltin(:super)(ResNet, self)[:__init__]()
         self[:blocks0] = nn.Sequential(conv3x3(3, 16, 1), nn.BatchNorm2d(16),
                                        nn.ReLU(inplace=true))
-        self[:blocks1] = buildResBlocks(16=>16, 1, 2, identity_con)
-        self[:blocks2] = buildResBlocks(16=>32, 2, 2, identity_con)
-        self[:blocks3] = buildResBlocks(32=>64, 2, 2, identity_con)
+        self[:blocks1] = buildResBlocks(16=>16, 1, 2, short_cut)
+        self[:blocks2] = buildResBlocks(16=>32, 2, 2, short_cut)
+        self[:blocks3] = buildResBlocks(32=>64, 2, 2, short_cut)
         self[:avgpool] = nn.AvgPool2d(8)
         self[:fc] = nn.Linear(64, num_classes)
     end
