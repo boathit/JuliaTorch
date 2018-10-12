@@ -7,7 +7,6 @@ include("dataUtils.jl")
 @pyimport torch.nn.functional as F
 @pyimport torch.optim as optim
 
-
 args = let s = ArgParseSettings()
     @add_arg_table s begin
         "--usecuda"
@@ -36,8 +35,8 @@ function train()
         for (i, (x, y)) in enumerate(trainLoader)
             (x, y) = x[:to](device), y[:to](device)
             x = x[:reshape](-1, 784)
-            os = model(x)
-            loss = F.nll_loss(os, y)
+            o = model(x)
+            loss = F.nll_loss(o, y)
 
             optimizer[:zero_grad]()
             loss[:backward]()
