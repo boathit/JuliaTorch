@@ -9,7 +9,7 @@ include("dataUtils.jl")
 
 args = let s = ArgParseSettings()
     @add_arg_table s begin
-        "--usecuda"
+        "--nocuda"
             action=:store_true
         "--batchsize"
             arg_type=Int
@@ -22,10 +22,10 @@ for (arg, val) in args
     println("$arg => $val")
 end
 
-device = torch.device(ifelse(args[:usecuda] && torch.cuda[:is_available](), "cuda", "cpu"))
+device = torch.device(ifelse(!args[:nocuda] && torch.cuda[:is_available](), "cuda", "cpu"))
 println(device)
 
-trainLoader, testLoader = getDataLoaders(args[:batchsize])
+trainLoader, testLoader = getmnistDataLoaders(args[:batchsize])
 
 @pydef mutable struct ConvNet <: nn.Module
     function __init__(self)

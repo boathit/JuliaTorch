@@ -6,13 +6,10 @@ include("dataUtils.jl")
 @pyimport torch.nn as nn
 @pyimport torch.nn.functional as F
 @pyimport torch.optim as optim
-@pyimport torchvision.transforms as transforms
-@pyimport torchvision.datasets as datasets
-
 
 args = let s = ArgParseSettings()
     @add_arg_table s begin
-        "--usecuda"
+        "--nocuda"
             action=:store_true
         "--batchsize"
             arg_type=Int
@@ -25,10 +22,10 @@ for (arg, val) in args
     println("$arg => $val")
 end
 
-device = torch.device(ifelse(args["usecuda"] && torch.cuda[:is_available](), "cuda", "cpu"))
+device = torch.device(ifelse(!args["nocuda"] && torch.cuda[:is_available](), "cuda", "cpu"))
 println(device)
 
-trainLoader, testLoader = getDataLoaders(args["batchsize"])
+trainLoader, testLoader = getmnistDataLoaders(args["batchsize"])
 
 model = nn.Sequential(nn.Linear(784, 400),
                       nn.ReLU(),
