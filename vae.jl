@@ -14,6 +14,9 @@ args = let s = ArgParseSettings()
         "--batchsize"
             arg_type=Int
             default=256
+        "--nepoch"
+            arg_type=Int
+            default=10
     end
     parse_args(s; as_symbols=true)
 end
@@ -51,10 +54,7 @@ end
                                  nn.LogSigmoid())
     end
 
-    function forward(self, z)
-        ## logx̂
-        self[:f](z)
-    end
+    forward(self, z) = self[:f](z)
 end
 
 function reparameterize(μ, logσ)
@@ -76,7 +76,7 @@ function lossF(logx̂, x, μ, logσ)
     term1 + term2
 end
 
-function train!(encoder, decoder, optimizer_encoder, optimizer_decoder, nepoch=10)
+function train!(encoder, decoder, optimizer_encoder, optimizer_decoder, nepoch)
     for epoch in 1:nepoch
         epochLoss = 0.0
         for (x, _) in trainLoader
@@ -96,13 +96,12 @@ function train!(encoder, decoder, optimizer_encoder, optimizer_decoder, nepoch=1
     end
 end
 
-function drawSamples(decoder, n=10)
-    x = nothing
+function drawSamples(decoder, n)
     @pywith torch.no_grad() begin
         z = torch.randn(n, 20)[:to](device)
         x = torch.exp(decoder(z))[:cpu]()
+        return x[:reshape](n, 28, 28)[:numpy]()
     end
-    x[:reshape](n, 28, 28)[:numpy]()
 end
 
 encoder, decoder = Encoder()[:to](device), Decoder()[:to](device)
@@ -111,7 +110,7 @@ optimizer_decoder = optim.Adam(decoder[:parameters](), lr=0.001)
 
 println("Training...")
 
-@time train!(encoder, decoder, optimizer_encoder, optimizer_decoder)
+@time train!(encoder, decoder, optimizer_encoder, optimizer_decoder, args[:nepoch])
 
 ### Testing in Jupyter notebook ###
 # using PyPlot
