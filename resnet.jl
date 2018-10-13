@@ -18,7 +18,7 @@ args = let s = ArgParseSettings()
             default=128
         "--nepoch"
             arg_type=Int
-            default=10
+            default=100
     end
     parse_args(s; as_symbols=true)
 end
@@ -107,6 +107,12 @@ end
 
 resnet = ResNet(10, !args[:plain])[:to](device)
 optimizer = optim.Adam(resnet[:parameters](), lr=0.001)
+
+function adjust_lr!(optimizer, lr)
+    for param in optimizer[:param_groups]
+        param["lr"] = lr
+    end
+end
 
 function train!(resnet, optimizer, nepoch)
     numstep = 60_000 / args[:batchsize]
