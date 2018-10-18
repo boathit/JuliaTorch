@@ -23,6 +23,7 @@ export PYTHON="/home/xiucheng/anaconda3/bin/python"
 * [Convolutional Neural Net](https://github.com/boathit/JuliaTorch/blob/master/convnet.jl)
 * [Residual Neural Net](https://github.com/boathit/JuliaTorch/blob/master/resnet.jl), implementing
   resnet described in [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385).
+* [Word2Vec](https://github.com/boathit/JuliaTorch/blob/master/word2vec.jl), implementing Skip-Gram described in [Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546).
 * [Variational Auto-Encoder](https://github.com/boathit/JuliaTorch/blob/master/vae.jl), implementing
   VAE described in [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114).
 
