@@ -74,12 +74,13 @@ negativesamplesize = 20
 end
 
 ## loading data
-text = read("../data/sherlock-holmes.txt", String)
+text = read("./data/sherlock-holmes.txt", String)
 text = cleantext(text)
-word2idx, idx2word, vocab, probs = buildVocab(text)
+seqwords = text2seqwords(text)
+word2idx, idx2word, vocab, probs = buildVocab(seqwords)
+centerwords, context = createContext(seqwords, word2idx, contextsize)
 probs .= probs .^ (3/4)
 probs .= probs ./ sum(probs)
-centerwords, context = createContext(word2idx, text, contextsize)
 
 # i = 4
 # map(x->get(idx2word, x, "UNK"), context[:, i])
@@ -123,13 +124,14 @@ println("There are $(length(dataloader)) data points.\nTraining...")
 
 ## saving word embeddings and idx2word
 U = model[:U][:weight][:data][:cpu]()[:numpy]()' |> copy
+V = model[:V][:weight][:data][:cpu]()[:numpy]()' |> copy
 using BSON: @save
-@save "w2vec.bson" U idx2word word2idx
+@save "w2vec.bson" U V idx2word word2idx
 
 ## playing around in REPL
 using BSON: @load
 using Distances
-@load "w2vec.bson" U idx2word word2idx
+@load "w2vec.bson" U V idx2word word2idx
 
 function knn(word2idx::Dict, idx2word::Dict, U::Matrix, word::String, k::Int=10)
     idx = get(word2idx, word, -1) + 1
@@ -139,5 +141,5 @@ function knn(word2idx::Dict, idx2word::Dict, U::Matrix, word::String, k::Int=10)
     map(i -> get(idx2word, i, "UNK"), ord[2:k+1])
 end
 
-@show knn(word2idx, idx2word, U, "sex")
+@show knn(word2idx, idx2word, U, "door")
 @show knn(word2idx, idx2word, U, "kill")

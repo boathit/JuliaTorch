@@ -27,6 +27,18 @@ end
 #     println(token[:text], "|", token[:lemma_], "|", token[:is_stop])
 # end
 
+"""
+Split a text into multiple sentences; each sentence is a sequence of words.
+"""
+function text2seqwords(text::String)
+    sentences = String.(split(text, ['.', '?', '!', ';']))
+    function sentence2words(sentence)
+        words = filter(w -> length(w) > 1, split(sentence, ' '))
+        String.(words)
+    end
+    sentence2words.(sentences)
+end
+
 function buildVocab(words::Vector{String})
     unigram = countmap(words)
     pairs = sort(collect(unigram), by=last, rev=true)
@@ -38,39 +50,43 @@ end
 
 #word2idx, idx2word, vocab, probs = buildVocab(words)
 
-function buildVocab(text::String)
-    words = filter(w -> length(w) > 1, split(text, ['.', '?', '!', ';', ' ']))
-    words = String.(words)
-    buildVocab(words)
-end
+buildVocab(seqwords::Vector{Vector{String}}) = buildVocab(vcat(seqwords...))
 
-function createContext(wordidx::Vector{Int}, contextsize::Int)
-    δ = div(contextsize, 2)
-    w = Int[]
-    C = Vector{Int}[]
-    for i = 1+δ:length(wordidx)-δ
-        push!(w, wordidx[i])
-        push!(C, vcat(wordidx[i-δ:i-1], wordidx[i+1:i+δ]))
+"""
+Creating context for a sequence of tokens.
+"""
+function createContext(tokens::Vector{Int}, contextsize::Int)
+    @assert iseven(contextsize) "context size should be a even."
+    δ, n = div(contextsize, 2), length(tokens)
+    w, C = Int[], Vector{Int}[]
+    for i = 1:n
+        push!(w, tokens[i])
+        if i <= δ
+            push!(C, vcat(tokens[1:i-1], tokens[i+1:2δ+1]))
+        elseif i > n - δ
+            push!(C, vcat(tokens[n-2δ:i-1], tokens[i+1:n]))
+        else # [1+δ, n-δ]
+            push!(C, vcat(tokens[i-δ:i-1], tokens[i+1:i+δ]))
+        end
     end
     w, hcat(C...)
 end
 
-function createContext(word2idx::Dict, text::String, contextsize::Int)
-    sentences = String.(split(text, ['.', '?', '!', ';']))
-    function sentence2idx(sentence)
-        words = filter(w -> length(w) > 1, split(sentence, ' '))
-        words = String.(words)
-        wordidx = map(x -> get(word2idx, x, 0), words)
-    end
-    wordidxs = filter(s -> length(s) > contextsize, sentence2idx.(sentences))
-    wordidxs = convert(Vector{Vector{Int}}, wordidxs)
-    wC = createContext.(wordidxs, contextsize)
+
+function createContext(seqwords::Vector{Vector{String}},
+                       word2idx::Dict, contextsize::Int)
+    words2idx(words) = map(x -> get(word2idx, x, 0), words)
+    seqtokens = filter(s -> length(s) > contextsize, words2idx.(seqwords))
+    seqtokens = convert(Vector{Vector{Int}}, seqtokens)
+    wC = createContext.(seqtokens, contextsize)
     vcat(first.(wC)...), hcat(last.(wC)...)
 end
 
+
 # s = read("../data/sherlock-holmes.txt", String);
 # text = cleantext(s);
+# seqwords = text2seqwords(text)
 #
-# word2idx, idx2word, vocab, probs = buildVocab(text)
+# word2idx, idx2word, vocab, probs = buildVocab(seqwords);
 #
-# w, C = createContext(word2idx, text, 2);
+# w, C = createContext(seqwords, word2idx, 4);
