@@ -112,9 +112,9 @@ function train!(model, optimizer, dataloader, vocab, probs, nepoch)
             optimizer[:zero_grad]()
             loss[:backward]()
             optimizer[:step]()
-            # i % 10 == 0 && GC.gc()
+            # i % 10 == 0 && GC.gc(false)
         end
-        GC.gc()
+        GC.gc(false)
         println("Epoch: $epoch\t Loss: $(epochloss/numstep)")
     end
 end
@@ -142,4 +142,5 @@ function knn(word2idx::Dict, idx2word::Dict, U::Matrix, word::String, k::Int=10)
 end
 
 @show knn(word2idx, idx2word, U, "door")
+@show knn(word2idx, idx2word, U, "see")
 @show knn(word2idx, idx2word, U, "kill")

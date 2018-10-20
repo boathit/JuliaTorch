@@ -46,7 +46,7 @@ function train()
             optimizer[:step]()
             i % 100 == 0 && println("Epoch: $epoch\tLoss: $(loss[:item]())")
         end
-        GC.gc()
+        GC.gc(false)
     end
 end
 
@@ -66,7 +66,7 @@ let (n, N) = (0, 0)
             N += y[:size](0)
             n += torch.sum(ŷ == y)[:item]()
         end
-        GC.gc()
+        GC.gc(false)
         println("Accuracy: $(n/N)")
     end
 end

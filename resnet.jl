@@ -126,9 +126,9 @@ function train!(resnet, optimizer, nepoch)
             optimizer[:zero_grad]()
             loss[:backward]()
             optimizer[:step]()
-            i % 10 == 0 && GC.gc()
+            i % 10 == 0 && GC.gc(false)
         end
-        GC.gc()
+        GC.gc(false)
         println("Epoch: $epoch\t Loss: $(epochLoss/numstep)")
     end
 end
@@ -147,9 +147,9 @@ let (n, N) = (0, 0)
             _, ŷ = torch.max(o, 1)
             N += y[:size](0)
             n += torch.sum(ŷ == y)[:item]()
-            i % 10 == 0 && GC.gc()
+            i % 10 == 0 && GC.gc(false)
         end
-        GC.gc()
+        GC.gc(false)
         println("Accuracy: $(n/N)")
     end
 end

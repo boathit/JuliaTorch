@@ -92,7 +92,7 @@ function train!(encoder, decoder, optimizer_encoder, optimizer_decoder, nepoch)
             optimizer_decoder[:step]()
         end
         println("Epoch: $epoch\t Loss: $(epochLoss/60_000)")
-        GC.gc()
+        GC.gc(false)
     end
 end
 

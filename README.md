@@ -22,10 +22,10 @@ export PYTHON="/home/xiucheng/anaconda3/bin/python"
 * [MLP](https://github.com/boathit/JuliaTorch/blob/master/mlp.jl)
 * [Convolutional Neural Net](https://github.com/boathit/JuliaTorch/blob/master/convnet.jl)
 * [Residual Neural Net](https://github.com/boathit/JuliaTorch/blob/master/resnet.jl) implements
-  resnet described in [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385).
-* [Word2Vec](https://github.com/boathit/JuliaTorch/blob/master/word2vec.jl) implements Skip-Gram described in [Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/abs/1310.4546).
+  resnet described in [paper](https://arxiv.org/abs/1512.03385).
+* [Word2Vec](https://github.com/boathit/JuliaTorch/blob/master/word2vec.jl) implements Skip-Gram described in   [paper](https://arxiv.org/abs/1310.4546).
 * [Variational Auto-Encoder](https://github.com/boathit/JuliaTorch/blob/master/vae.jl) implements
-  VAE described in [Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114).
+  VAE described in [paper](https://arxiv.org/abs/1312.6114).
 
 ## Usage
 
@@ -40,9 +40,9 @@ $ julia vae.jl --nepoch 15
 Defining PyTorch nn.Module in Julia
 
 ```julia
-@pydef mutable struct ResBlock <: nn.Module
+@pydef mutable struct Model <: nn.Module
     function __init__(self, ...)
-        pybuiltin(:super)(ResBlock, self)[:__init__]()
+        pybuiltin(:super)(Model, self)[:__init__]()
         self[:f] = ...
     end
     function forward(self, x)

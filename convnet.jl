@@ -14,6 +14,9 @@ args = let s = ArgParseSettings()
         "--batchsize"
             arg_type=Int
             default=256
+        "--nepoch"
+            arg_type=Int
+            default=20
     end
     parse_args(s; as_symbols=true)
 end
@@ -52,7 +55,7 @@ model = ConvNet()[:to](device)
 optimizer = optim.Adam(model[:parameters](), lr=0.001)
 
 function train()
-    for epoch in 1:10
+    for epoch in 1:args[:nepoch]
         for (i, (x, y)) in enumerate(trainLoader)
             (x, y) = x[:to](device), y[:to](device)
             o = model(x)
@@ -63,7 +66,7 @@ function train()
             optimizer[:step]()
             i % 100 == 0 && println("Epoch: $epoch\tLoss: $(loss[:item]())")
         end
-        GC.gc()
+        GC.gc(false)
     end
 end
 
@@ -82,7 +85,7 @@ let (n, N) = (0, 0)
             N += y[:size](0)
             n += torch.sum(ŷ == y)[:item]()
         end
-        GC.gc()
+        GC.gc(false)
         println("Accuracy: $(n/N)")
     end
 end
