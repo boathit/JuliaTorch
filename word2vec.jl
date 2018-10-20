@@ -3,13 +3,14 @@
 using PyCall
 using ArgParse
 using StatsBase
-include("dataUtils.jl")
-include("textUtils.jl")
 
 @pyimport torch
 @pyimport torch.nn as nn
 @pyimport torch.nn.functional as F
 @pyimport torch.optim as optim
+
+include("dataloader.jl")
+include("textUtils.jl")
 
 args = let s = ArgParseSettings()
     @add_arg_table s begin
@@ -51,9 +52,7 @@ negativesamplesize = 20
 
     ## here we use the same negative samples for every positive sample of w[i],
     ## thus we times `m`
-    forward(self, w, P, N) = self[:positiveLoss](w, P) +
-                             self[:m] * self[:negativeLoss](w, N)
-
+    forward(self, w, P, N) = self[:positiveLoss](w, P) + self[:m] * self[:negativeLoss](w, N)
     positiveLoss(self, w, P) = self[:sampleLoss](w, P, true)
     negativeLoss(self, w, N) = self[:sampleLoss](w, N, false)
 
