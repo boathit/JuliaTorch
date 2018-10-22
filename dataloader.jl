@@ -1,6 +1,5 @@
 using Random:randperm!
 
-
 """
     DataLoader(data...; batchsize::Int=100, shuffle=true)
 
@@ -27,10 +26,10 @@ struct DataLoader
     n::Int
 end
 
-function DataLoader(data::NTuple{N,<:AbstractArray}; batchsize::Int=100, shuffle=false) where N
-    lens = [last(size(x)) for x in data]
-    n = first(lens)
-    @assert all(len -> len == n, lens) "The data should have the same length."
+function DataLoader(data::NTuple{N,AbstractArray}; batchsize::Int=100, shuffle=false) where N
+    l = last.(size.(data))
+    n = first(l)
+    @assert all(n .== l) "The data should have the same length."
     # n = last(size(first(data)))
     indices = collect(1:n)
     shuffle && randperm!(indices)
