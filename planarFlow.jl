@@ -26,7 +26,7 @@ m[:log_abs_det_jacobian](z)
         self[:b] = nn.Parameter(torch.tensor(0.0))
         self[:u] = nn.Parameter(torch.randn(D, 1))
 
-        ## such an intialization is critically important to the fast convergence
+        ## such an intialization is critically important for the fast convergence
         self[:w][:data][:uniform_](-0.01, 0.01)
         self[:u][:data][:uniform_](-0.01, 0.01)
         #nn.init[:kaiming_uniform_](self[:w], a=sqrt(5))
@@ -124,6 +124,7 @@ end
 
 @time train(5)
 
+## visualization in Jupyter or Juno
 using PyPlot
 
 # ## target distribution

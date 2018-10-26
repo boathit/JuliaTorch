@@ -26,7 +26,7 @@ export PYTHON="/home/xiucheng/anaconda3/bin/python"
 * [Word2Vec](https://github.com/boathit/JuliaTorch/blob/master/word2vec.jl) implements Skip-Gram described in   [paper](https://arxiv.org/abs/1310.4546).
 * [Variational Auto-Encoder](https://github.com/boathit/JuliaTorch/blob/master/vae.jl) implements
   VAE described in [paper](https://arxiv.org/abs/1312.6114).
-* [Normalizing Flow](https://github.com/boathit/JuliaTorch/blob/master/planarFlow.jl) implements normalizing flows described in in [paper](https://arxiv.org/abs/1505.05770). Also see this great [tutorial](https://blog.evjang.com/2018/01/nf1.html).
+* [Normalizing Flows](https://github.com/boathit/JuliaTorch/blob/master/planarFlow.jl) implements normalizing flows described in in [paper](https://arxiv.org/abs/1505.05770). Also see this great [tutorial](https://blog.evjang.com/2018/01/nf1.html).
 
 ## Usage
 
