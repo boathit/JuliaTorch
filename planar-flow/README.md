@@ -1,4 +1,5 @@
-Assuming we have a target distribution $p(x_1, x_2) = \mathcal{N}(x_1|\mu=1/4x_2^2, \sigma=1) \cdot N(x_2|\mu=0, \sigma=4)$, as shown below,
+Assuming we have a target distribution $p(x_1, x_2) = \mathcal{N}(x_1|\mu=1/4x_2^2, \sigma=1) \cdot N(x_2|\mu=0, \sigma=4)$, 
+
 ![target-dist](../figure/planar-flow-1.png)
 
 We could transform an isotropic Gaussian distribution with a $K=10$ planar flows to match it
