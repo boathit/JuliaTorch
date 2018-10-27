@@ -15,6 +15,8 @@ or `.zshrc`, e.g., if I wish to use the Python in Anaconda3 I can add the line
 export PYTHON="/home/xiucheng/anaconda3/bin/python"
 ```
 
+You may consider install this [chrome extension](https://github.com/orsharir/github-mathjax) to read the equations in this repository.
+
 ## Roadmap
 
 * [Linear Regression](https://github.com/boathit/JuliaTorch/blob/master/linearRegression.jl)
