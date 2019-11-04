@@ -1,17 +1,17 @@
 using PyCall
 
-@pyimport torchvision
-@pyimport torchvision.transforms as transforms
-@pyimport torchvision.datasets as datasets
+torchvision = pyimport("torchvision")
+transforms  = pyimport("torchvision.transforms")
+datasets    = pyimport("torchvision.datasets")
 
 
 function getDataLoaders(trainData, testData, batchsize)
-    trainLoader = torch.utils[:data][:DataLoader](dataset=trainData,
-                                                  batch_size=batchsize,
-                                                  shuffle=true)
-    testLoader = torch.utils[:data][:DataLoader](dataset=testData,
-                                                 batch_size=batchsize,
-                                                 shuffle=false)
+    trainLoader = torch.utils.data.DataLoader(dataset=trainData,
+                                              batch_size=batchsize,
+                                              shuffle=true)
+    testLoader = torch.utils.data.DataLoader(dataset=testData,
+                                             batch_size=batchsize,
+                                             shuffle=false)
     trainLoader, testLoader
 end
 
