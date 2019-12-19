@@ -2,10 +2,10 @@ using PyCall
 using ArgParse
 include("dataUtils.jl")
 
-@pyimport torch
-@pyimport torch.nn as nn
-@pyimport torch.nn.functional as F
-@pyimport torch.optim as optim
+torch = pyimport("torch")
+optim = pyimport("torch.optim")
+nn    = pyimport("torch.nn")
+F     = pyimport("torch.nn.functional")
 
 args = let s = ArgParseSettings()
     @add_arg_table s begin
@@ -25,36 +25,36 @@ for (arg, val) in args
     println("$arg => $val")
 end
 
-device = torch.device(ifelse(!args[:nocuda] && torch.cuda[:is_available](), "cuda", "cpu"))
+device = torch.device(ifelse(!args[:nocuda] && torch.cuda.is_available(), "cuda", "cpu"))
 println(device)
 
 trainLoader, testLoader = getmnistDataLoaders(args[:batchsize])
 
 @pydef mutable struct Encoder <: nn.Module
     function __init__(self)
-        pybuiltin(:super)(Encoder, self)[:__init__]()
-        self[:fc] = nn.Linear(28^2, 400)
-        self[:fμ] = nn.Linear(400, 20)
-        self[:flogσ] = nn.Linear(400, 20)
+        pybuiltin(:super)(Encoder, self).__init__()
+        self.fc = nn.Linear(28^2, 400)
+        self.fμ = nn.Linear(400, 20)
+        self.flogσ = nn.Linear(400, 20)
     end
 
     function forward(self, x)
-        h = F.relu(self[:fc](x))
+        h = F.relu(self.fc(x))
         ## μ, logσ
-        self[:fμ](h), self[:flogσ](h)
+        self.fμ(h), self.flogσ(h)
     end
 end
 
 @pydef mutable struct Decoder <: nn.Module
     function __init__(self)
-        pybuiltin(:super)(Decoder, self)[:__init__]()
-        self[:f] = nn.Sequential(nn.Linear(20, 400),
-                                 nn.ReLU(),
-                                 nn.Linear(400, 784),
-                                 nn.LogSigmoid())
+        pybuiltin(:super)(Decoder, self).__init__()
+        self.f = nn.Sequential(nn.Linear(20, 400),
+                               nn.ReLU(),
+                               nn.Linear(400, 784),
+                               nn.LogSigmoid())
     end
 
-    forward(self, z) = self[:f](z)
+    forward(self, z) = self.f(z)
 end
 
 function reparameterize(μ, logσ)
@@ -80,16 +80,16 @@ function train!(encoder, decoder, optimizer_encoder, optimizer_decoder, nepoch)
     for epoch in 1:nepoch
         epochLoss = 0.0
         for (x, _) in trainLoader
-            x = x[:reshape](-1, 784)[:to](device)
+            x = x.reshape(-1, 784).to(device)
             logx̂, μ, logσ = vae(encoder, decoder, x)
             loss = lossF(logx̂, x, μ, logσ)
-            epochLoss += loss[:item]()
+            epochLoss += loss.item()
 
-            optimizer_encoder[:zero_grad]()
-            optimizer_decoder[:zero_grad]()
-            loss[:backward]()
-            optimizer_encoder[:step]()
-            optimizer_decoder[:step]()
+            optimizer_encoder.zero_grad()
+            optimizer_decoder.zero_grad()
+            loss.backward()
+            optimizer_encoder.step()
+            optimizer_decoder.step()
         end
         println("Epoch: $epoch\t Loss: $(epochLoss/60_000)")
         GC.gc(false)
@@ -98,15 +98,15 @@ end
 
 function drawSamples(decoder, n)
     @pywith torch.no_grad() begin
-        z = torch.randn(n, 20)[:to](device)
-        x = torch.exp(decoder(z))[:cpu]()
-        return x[:reshape](n, 28, 28)[:numpy]()
+        z = torch.randn(n, 20).to(device)
+        x = torch.exp(decoder(z)).cpu()
+        return x.reshape(n, 28, 28).numpy()
     end
 end
 
-encoder, decoder = Encoder()[:to](device), Decoder()[:to](device)
-optimizer_encoder = optim.Adam(encoder[:parameters](), lr=0.001)
-optimizer_decoder = optim.Adam(decoder[:parameters](), lr=0.001)
+encoder, decoder = Encoder().to(device), Decoder().to(device)
+optimizer_encoder = optim.Adam(encoder.parameters(), lr=0.001)
+optimizer_decoder = optim.Adam(decoder.parameters(), lr=0.001)
 
 println("Training...")
 
@@ -115,4 +115,4 @@ println("Training...")
 ### Testing in Jupyter notebook ###
 # using PyPlot
 # x = drawSamples(decoder, 20)
-# plt[:imshow](x[1, :, :])
+# plt.imshow(x[1, :, :])

@@ -5,8 +5,8 @@ Using PyTorch in [Julia Language](http://julialang.org) via [PyCall](https://git
 ## Requirement
 
 * Julia >= 1.0
-* PyTorch >= 0.4 with Python 3 (Anaconda3 is recommended)
-* PyCall >= 1.18.5
+* PyTorch >= 1.0 with Python 3 (Anaconda3 is recommended)
+* PyCall >= 1.19
 
 You can tell PyCall.jl which Python you would like to use by exporting `PYTHON` environment variable in your `.bashrc`
 or `.zshrc`, e.g., if I wish to use the Python in Anaconda3 I can add the line
@@ -45,11 +45,11 @@ Defining PyTorch nn.Module in Julia
 ```julia
 @pydef mutable struct Model <: nn.Module
     function __init__(self, ...)
-        pybuiltin(:super)(Model, self)[:__init__]()
-        self[:f] = ...
+        pybuiltin(:super)(Model, self).__init__()
+        self.f = ...
     end
     function forward(self, x)
-      self[:f](x)
+      self.f(x)
     end
 end
 ```

@@ -5,7 +5,7 @@
 using PyCall
 using StatsBase
 
-@pyimport spacy
+spacy = pyimport("spacy")
 
 nlp = spacy.load("en", disable=["ner", "tagger", "parser"])
 
@@ -17,7 +17,7 @@ function cleantext(s::String)
 
     tokens = String[]
     for token in doc
-        !token[:is_stop] && push!(tokens, token[:lemma_])
+        !token.is_stop && push!(tokens, token.lemma_)
     end
     join(tokens, " ")
 end
